@@ -11,6 +11,8 @@
 </template>
 
 <script>
+import firebase from "firebase";
+
 export default {
   data() {
     return {
@@ -20,7 +22,18 @@ export default {
   },
   methods: {
     signIn() {
-      this.$router.replace("hello");
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(this.email, this.password)
+        .then(
+          user => {
+            this.$emit("loggedIn");
+            this.$router.replace("hello");
+          },
+          err => {
+            alert("Oops. " + err.message);
+          }
+        );
     }
   }
 };

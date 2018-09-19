@@ -4,11 +4,19 @@ import Home from "@/views/Home.vue";
 import Login from "@/views/Login.vue";
 import SignUp from "@/views/SignUp.vue";
 import Hello from "@/views/Hello.vue";
+import NotFound from "@/views/NotFound.vue";
+
+import firebase from "firebase";
 
 Vue.use(Router);
 
-export default new Router({
+let router = new Router({
   routes: [
+    {
+      path: "*",
+      name: "notfound",
+      component: NotFound
+    },
     {
       path: "/",
       name: "home",
@@ -27,7 +35,10 @@ export default new Router({
     {
       path: "/hello",
       name: "hello",
-      component: Hello
+      component: Hello,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: "/about",
@@ -40,3 +51,16 @@ export default new Router({
     }
   ]
 });
+
+router.beforeEach((to, from, next) => {
+  let currentUser = firebase.auth().currentUser;
+  let requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+
+  console.log({ currentUser });
+
+  if (requiresAuth && !currentUser) next("login");
+  else if (currentUser && to.name === "login") next("hello");
+  else next();
+});
+
+export default router;

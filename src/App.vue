@@ -2,12 +2,40 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link> |
-      <router-link to="/login">Login</router-link>
+      <router-link to="/about">About</router-link>
+      <template v-if="!userIsLogged">
+        |
+        <router-link to="/login">Login</router-link>
+      </template>
+      <template v-if="userIsLogged">
+        |
+        <router-link to="/hello">Hello</router-link>
+      </template>
     </div>
-    <router-view/>
+    <router-view @loggedIn="loggedIn" @loggedOut="loggedOut" />
   </div>
 </template>
+
+<script>
+import firebase from "firebase";
+
+export default {
+  data() {
+    return {
+      userIsLogged: false
+    };
+  },
+  methods: {
+    loggedIn() {
+      this.userIsLogged = true;
+    },
+    loggedOut() {
+      this.userIsLogged = false;
+    }
+  }
+};
+</script>
+
 
 <style>
 #app {
